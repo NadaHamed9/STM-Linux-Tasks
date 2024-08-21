@@ -62,7 +62,31 @@ Frees the memory block pointed to by `ptr`. The block is marked as free and merg
 ## Testing
 
 - **Test Program**: A test program (`main.c`) simulates various allocation and deallocation scenarios to validate the HMM.
+  
+- **Test1**:
+
+   ![Flowchart for HmmAlloc](https://github.com/NadaHamed9/STM-Linux-Tasks/blob/main/HMM%20Phase1/test1.png)
+
+-**Test1 Results**:
+
+ ![Flowchart for HmmAlloc](https://github.com/NadaHamed9/STM-Linux-Tasks/blob/main/HMM%20Phase1/test1%20results.png)
+
+ -**Test2**:
+
+ 
+  ![Flowchart for HmmAlloc](https://github.com/NadaHamed9/STM-Linux-Tasks/blob/main/HMM%20Phase1/test2.png)
+
+
+ -**Test2 Results**:
+
+  ![Flowchart for HmmAlloc](https://github.com/NadaHamed9/STM-Linux-Tasks/blob/main/HMM%20Phase1/test2%20result.png)
+
+
 - **Random Allocation Test**: The test program includes random allocation sizes and orders to ensure robustness.
+  Where This Is Random Allocation Test's Resluts:
+
+  
+ ![Flowchart for HmmAlloc](https://github.com/NadaHamed9/STM-Linux-Tasks/blob/main/HMM%20Phase1/random%20test%20results.png)
 
 ## Usage
  **Compile the Project:**
