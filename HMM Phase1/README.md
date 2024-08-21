@@ -57,7 +57,7 @@ Frees the memory block pointed to by `ptr`. The block is marked as free and merg
 ![Flowchart for HmmAlloc](path_to_your_alloc_flowchart_image)
 
 ### `HmmFree()`
-![Flowchart for HmmFree](path_to_your_free_flowchart_image)
+![Flowchart for HmmFree](https://github.com/NadaHamed9/STM-Linux-Tasks/blob/main/HMM%20Phase1/HmmFree.png)
 
 ## Testing
 
