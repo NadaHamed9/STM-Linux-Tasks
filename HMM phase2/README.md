@@ -64,7 +64,7 @@ Frees the memory block pointed to by `ptr`. The block is marked as free and merg
 
 To get a visual demonstration of the HMM in action, you can watch the following video:
 
-[Watch the Shell Demonstration]()
+[Watch the HMM Demonstration]()
 
 
 ## Usage
