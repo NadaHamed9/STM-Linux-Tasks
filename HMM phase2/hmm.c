@@ -1,19 +1,18 @@
 #include "functions.h"
 
-/*it pointer to track heap allocations.*/
+/*pointer to track heap allocations.*/
 static void *program_break = NULL;
 
 static Block *head_free = NULL;   /*Head of the free list*/
 static Block *tail_free = NULL;   /*Tail of the free list*/
 
-/*points to head of allocated area in sim heap*/
+/*points to head of allocated area in heap*/
 static Block *header=NULL;
-/*points to last of allocated area in sim heap*/
+/*points to last of allocated area in heap*/
 static Block *last=NULL;
 
 
 /*Function to find a free block in the heap*/
-
 Block *find_free_block(size_t size) {
 	Block *current = head_free;
 	while (current) {
@@ -26,6 +25,7 @@ Block *find_free_block(size_t size) {
 	/*not found freed block at all or of needed size*/
 	return NULL;
 }
+
 /*function to print free list created*/
 void print_freelist() {
         Block *current = head_free;
@@ -49,8 +49,6 @@ void alloc_extra()
 {
 	size_t total_size= METADATA_SIZE+EXTRA_SIZE;
 
-	total_size=allign_size(total_size);
-
 	/*allocate extra space in heap by incrementing program break*/
 	void *req=sbrk(total_size);
 
@@ -73,9 +71,11 @@ void alloc_extra()
 
 		/* Insert at the head of the free list */
 		free_block->next = head_free;
+
 		if (head_free != NULL) {
 			head_free->prev = free_block;
 		}
+
 		/*first node*/
 		head_free = free_block;
 		free_block->prev=NULL;
@@ -104,37 +104,36 @@ void alloc_extra()
 	}
 
 	/*increment program break*/
-	program_break=(uint8_t*)req+total_size;
-	
+	program_break=(uint8_t*)req+total_size;	
 }
 
 /*Function to split a block if it's larger than required size*/
 void split_block(Block *block, size_t size) {
-
-    if (block->size >= size + METADATA_SIZE + 1) {
-	    /* Ensure there is enough space to create a new block*/
-	    Block *new_block = (Block *)((uint8_t *)block + METADATA_SIZE + size);
-	    /*create new block of size=TOTALsize-(size needed+metadata size)*/
-	    new_block->size = block->size - size - METADATA_SIZE;
-	    /*mark newblock splitted as free */
-	    new_block->free = 1;
-
-	    /*edit free list*/
-	    new_block->next = block->next;
-	    new_block->prev = block;
-	    
-	    if (block->next) {
-		    block->next->prev = new_block;
-
-	    } 
-	    else {
-		    tail_free = new_block;
-	    }
-
-	    block->size = size;
-	    block->next = new_block;
-    }
-
+	
+	/* Ensure there is enough space to create a new block*/
+	if (block->size >= size + METADATA_SIZE + 1) {
+		
+		Block *new_block = (Block *)((uint8_t *)block + METADATA_SIZE + size);
+		/*create new block of size=TOTALsize-(size needed+metadata size)*/
+		new_block->size = block->size - size - METADATA_SIZE;
+		/*mark newblock splitted as free */
+		new_block->free = 1;
+		
+		/*edit free list*/
+		new_block->next = block->next;
+	        new_block->prev = block;
+		/*if newblock created not the last block*/
+		if (block->next) {
+			block->next->prev = new_block;
+		}
+		else {
+			/*if it last block updates tail of free list*/
+			tail_free = new_block;
+		}
+		
+		block->size = size;
+		block->next = new_block;
+	}
 }
 
 /*Function to merge adjacent free blocks*/
@@ -173,17 +172,18 @@ void merge_blocks() {
 /*function to free allocated space area*/
 void HmmFree (void* ptr)
 {
-	/*no area is allocated*/
-	if (program_break == NULL) {
-		printf("ERROR!! Cannot free without allocating\n");
-		return;
-	}
 
 	/*check on pointer points to valid area*/
 	if (ptr == NULL) {
 		//printf("ERROR!! Pointer is null or locates on area out heap\n");
 		return;
 	}
+	/*no area is allocated to be freed*/
+        if (program_break == NULL) {
+                printf("ERROR!! Cannot free without allocating\n");
+                return;
+        }
+
 
 	/*to edit on metadata*/
 	Block *free_block = (Block*)(ptr) - 1;
@@ -207,8 +207,6 @@ void HmmFree (void* ptr)
 		}
 		else{
 			 program_break=(uint8_t*)result;
-			//printf("address gowa hmmfreec %p\n",program_break);
-
 			/*thats mean every allocated area is freed so remove free list*/
 			if(program_break==header)
 			{
@@ -257,8 +255,7 @@ void insert_free_block(Block* free_block)
                 }
 		if(current==free_block)
 		{
-		
-	//		printf("attempt to insert a block next to itself\n");
+			/*attempt to insert a block next to itself*/
 			return;
 		}
 
@@ -400,7 +397,7 @@ void* HmmAlloc(size_t size)
 	program_break=(uint8_t*)req+total_size;
 
 	/*allocate extra free space*/
-//	alloc_extra();
+	alloc_extra();
 
 	/*update freelist and clean it and merge if needed*/
 	cleanup_freelist();
@@ -408,108 +405,6 @@ void* HmmAlloc(size_t size)
 	/*return accessible user area*/
 	return (void*)(block+1);
 }
-
-#if ( DEBUGGING == 1)
-
-/*function to test merge,update head,split*/
-void test1()
-{
-	void*ptr1=malloc(400);
-        printf("allocated ptr1 of size 400 at: %p\n",ptr1);
-	printf("program break at : %p\n",sbrk(0));
-	print_freelist();
-
-	void*ptr2=malloc(100);
-        printf("allocated ptr2 of size 100 at: %p\n",ptr2);
-	printf("program break at : %p\n",sbrk(0));
-	print_freelist();
-
-	void*ptr3=malloc(300);
-        printf("allocated ptr3 of size 300 at: %p\n",ptr3);
-	printf("program break at : %p\n",sbrk(0));
-	print_freelist();
-
-	/*free block from middle of allocated space then first then last*/
-        printf("freed second allocated ptr2 of size 100\n");
-        free(ptr2);
-	printf("program break at : %p\n",sbrk(0));
-        print_freelist();
-
-	printf("freed first allocated ptr1 of size 400\n");
-        free(ptr1);
-        printf("program break at : %p\n",sbrk(0));
-	print_freelist();
-
-	printf("freed last allocated ptr3 of size 300\n");
-        free(ptr3);
-        printf("program break at : %p\n",sbrk(0));
-        print_freelist();
-
-}
-/*test normal scenario allocate then free */
-void normal()
-{
-	/*allocate ptr1*/
-	void*ptr1=malloc(500);
-	printf("allocated ptr1 of size 500 at: %p\n",ptr1);
-	print_freelist();
-
-	/*free ptr1*/
-	printf("freed first allocated ptr1 of size 500\n");
-        free(ptr1);
-        print_freelist();
-
-	/*allocate ptr2 it use of extra space allocated*/
-	void*ptr2=malloc(400);
-        printf("allocated ptr2 of size 400 at: %p\n",ptr2);
-	print_freelist();
-
-	/*free ptr2*/
-	printf("freed last allocated ptr2 of size 400\n");
-	free(ptr2);
-	print_freelist();
-
-	/*allocate ptr3*/
-	void*ptr3=malloc(400);
-        printf("allocated ptr3 of size 400 at: %p\n",ptr3);
-        print_freelist();
-
-}
-
-/*this function for testing*/
-void test2()
-{
-	/*first program break points to start of heap*/
-	printf("program break at start: %p\n",sbrk(0));
-
-	void*ptr1=malloc(100);
-	printf("allocated ptr1 of size 100 at: %p\n",ptr1);
-        printf("program break at: %p\n",sbrk(0));
-        print_freelist();
-
-
-	/*tries to free area out of heap*/
-	int *ptr;
-	free(ptr);
-
-	void*ptr2=malloc(892);
-	printf("allocated ptr2 of size 992 at: %p\n",ptr2);
-        printf("program break at: %p\n",sbrk(0));
-        print_freelist();
-
-	printf("freed last allocated ptr2 of size 992\n");
-        free(ptr2);
-        printf("program break at : %p\n",sbrk(0));
-        print_freelist();
-
-	printf("freed first allocated ptr1 of size 100\n");
-        free(ptr1);
-        printf("program break at : %p\n",sbrk(0));
-        print_freelist();
-	printf("program break at : %p\n",sbrk(0));
-}
-#endif
-
 
 /*actual malloc*/
 void *malloc(size_t size)
@@ -549,7 +444,11 @@ void *calloc(size_t nmemb, size_t size)
 /*actual realloc*/
 void *realloc(void *ptr, size_t size)
 {
+#if ( DEBUGGING == 1)
+	
 	printf("realloc adress %p with size %ld\n",ptr,size);
+#endif
+
 	/*do allign if needed*/
         size=allign_size(size);
 
@@ -611,3 +510,6 @@ size_t allign_size(size_t size)
 		return size;
 	}
 }
+
+
+

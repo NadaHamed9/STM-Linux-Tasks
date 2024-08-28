@@ -7,9 +7,9 @@
 #include <string.h>
 #include <unistd.h>
 
-#define EXTRA_SIZE     (1024)               // 1KB 
-#define METADATA_SIZE  (sizeof(Block)) 
-#define DEBUGGING      1                   //turn off debugging functions
+#define EXTRA_SIZE     (1024*1024)               // 1MB 
+#define METADATA_SIZE  (sizeof(Block))          // Metadata size
+#define DEBUGGING      0                       //turn off debugging functions
 
 /*Metadata structure for a memory block.*/
 typedef struct Block {
@@ -70,22 +70,6 @@ void* HmmAlloc(size_t size);
 /*
 *paramters (in):void
 *paramters (out):void
-*description: this function for debugging where test scenario[if allocated ptr1,ptr2,ptr3
-*then free ptr2 then ptr1 then ptr3, it checks merge,update head,split].
-*/
-void test1(void);
-
-/*
-*paramters (in):void
-*paramters (out):void
-*description: this function for debugging test if i allocate area then free it and then allocate within
-*space of extra size.
-*/
-void normal(void);
-
-/*
-*paramters (in):void
-*paramters (out):void
 *description: this function is called each time when HmmAlloc is called as it allocates extra space 1kb
 *and mark it as free so next time of allocation take space from this area if suitable and no need to 
 *increment program break again.
@@ -115,18 +99,43 @@ void remove_from_freelist(Block* block);
 void insert_free_block(Block* free_block);
 
 /*
-*paramters (in):void
-*paramters (out):void
-*description: this function for debugging test if i allocate space and used it all and then freed it 
-*test thet program break decrements .
+*paramters (in):size_t
+*paramters (out):void*
+*description: this function is wrapper for HmmAlloc and named as libc function to use
+*my lib instead of libc.
 */
-void test2();
-
 void *malloc(size_t size);
+
+/*
+*paramters (in):void*
+*paramters (out):void
+*description: this function is wrapper for HmmFree and named as libc function to use
+*my lib instead of libc.
+*/
 void free(void *ptr);
+
+/*
+*paramters (in):size_t
+*paramters (out):void*
+*description: this function is wrapper for HmmCalloc to allocates area for array 
+*and named as libc function to use my lib instead of libc.
+*/
 void *calloc(size_t nmemb, size_t size);
+
+/*
+*paramters (in):size_t , void*
+*paramters (out):void*
+*description: this function is wrapper for HmmRealloc to reallocates area 
+*and named as libc function to use my lib instead of libc.
+*/
 void *realloc(void *ptr, size_t size);
 
+/*
+*paramters (in):size_t
+*paramters (out):size_t
+*description: this function is used to allign adresses and sizes to 8bytes
+*to avoid fragmentation and enhace memory perfomnace.
+*/
 size_t allign_size(size_t size);
 
 
