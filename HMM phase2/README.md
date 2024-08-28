@@ -44,6 +44,7 @@ Frees the memory block pointed to by `ptr`. The block is marked as free and merg
 - **`void cleanup_freelist(void)`**: Cleans up the free list by removing used blocks.
 - **`void insert_free_block(Block *free_block)`**: Inserts a free block into the free list.
 - **`void remove_from_freelist(Block* block)`**: Removes a block from the free list.
+- **`size_t allign_size(size_t size);`**: Alligns address to 8bytes.
 
 ## Design
 
