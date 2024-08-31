@@ -8,6 +8,11 @@ This project involves implementing a version of the `fdisk -l` command that read
 - **functions.c**: Contains the implementation of functions to read and display the partition and logical partition tables.
 - **functions.h**: Header file that includes necessary includes, macros, data structures, and function prototypes.
 
+## Results
+-my code shows partiton entries as in disk order.
+
+![My Image](fdisk.png)
+
 
 ## Compilation
 
