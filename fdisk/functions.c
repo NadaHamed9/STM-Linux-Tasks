@@ -50,45 +50,43 @@ void read_logical_partitions(PartitionEntry *table_entry_ptr,int index)
 	/*flag indicates theres EBR or not*/
 	int flag=1;
 	off_t out;
+	/*starting LBA of extended partition*/
 	int size=table_entry_ptr[index].lba;
-	
-        out=lseek(fd,table_entry_ptr[index].lba*512,SEEK_SET);
-
-	if(out==-1)
-		perror("lseek error:");
-	else{
-		/*read file given*/
-                read(fd,buf2,512);
-
-                PartitionEntry *logical_entry_ptr = (PartitionEntry *) &buf2[446];
-
-		/*start from partition 5*/
-		int count=5;
-                int i=0;
-		while(flag){
+	/*start from partition 5*/
+	int count=5;
+      
+	while(flag){
+		
+		out=lseek(fd,size*512,SEEK_SET);
+		if(out==-1)
+			perror("lseek error:");
+		else{
+			/*read file given*/
+			read(fd,buf2,512);
+			PartitionEntry *logical_entry_ptr = (PartitionEntry *) &buf2[446];
+			/*start from partition 5*/
 
 			/*check if its Linux file system*/
-			if(logical_entry_ptr[i].partition_type==0x83 ||logical_entry_ptr[i].partition_type==0x93
-                                ||logical_entry_ptr[i].partition_type==0x43)
+			if(logical_entry_ptr[0].partition_type==0x83 ||logical_entry_ptr[0].partition_type==0x93
+                                ||logical_entry_ptr[0].partition_type==0x43)
 			{
-				printf("%s%-5d %-10c %-10u %-10u %-10u %uG      %-10X %s\n",
+				printf("%s%-5d %-10c %-10u %-10u %-10u %uM    %-10X %s\n",
 						args,count,
-						logical_entry_ptr[i].status == 0x80 ? '*' : ' ',
-                                                logical_entry_ptr[i].lba+size,
-                                                logical_entry_ptr[i].lba+size+logical_entry_ptr[i].sector_count - 1,
-                                                logical_entry_ptr[i].sector_count,
-                                                (uint32_t) (((uint64_t) logical_entry_ptr[i].sector_count *512)
-							/ (1024 * 1024 * 1024)),
-						logical_entry_ptr[i].partition_type,"Linux");
+						logical_entry_ptr[0].status == 0x80 ? '*' : ' ',
+                                                logical_entry_ptr[0].lba+size,
+                                                logical_entry_ptr[0].lba+size+logical_entry_ptr[0].sector_count - 1,
+                                                logical_entry_ptr[0].sector_count,
+                                                (uint32_t) (((uint64_t) logical_entry_ptr[0].sector_count *512)
+							/ ( 1024 * 1024)),
+						logical_entry_ptr[0].partition_type,"Linux");
 			}
 
 			/*update acummlative size*/
-			size=logical_entry_ptr[i].lba +size;
-			i++;
+			size=logical_entry_ptr[1].lba +table_entry_ptr[index].lba;
 			
-			if(logical_entry_ptr[i].lba ==0)
-
+			if(logical_entry_ptr[1].lba ==0)
 			{
+				
 				/*that was last logical partition no more*/
 				flag=0;
 			}
