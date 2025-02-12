@@ -1,5 +1,6 @@
 #include "Udp.h"
-//#include "Dns.h"
+#include "Dns.h"
+
 // Constructor implementation
 Udp::Udp(char *dev) : Ip(dev) {
 	printf("UDP Sniffer initialized\n");
@@ -16,11 +17,11 @@ void Udp::packet_handler(const struct pcap_pkthdr *pkthdr, const u_char *packet)
 
 
 	// Check if it's a DNS request port 53
-/*	if (ntohs(udp->source) == 53 || ntohs(udp->dest) == 53) {
+	if (ntohs(udp->source) == 53 || ntohs(udp->dest) == 53) {
 		//create obj of Dns class
 		Dns dns_sniffer(dev);
 		dns_sniffer.packet_handler(pkthdr, packet);
-	}*/
+	}
 }
 
 // Destructor
