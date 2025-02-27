@@ -1,8 +1,8 @@
 # 🛒 Clothing Shop - IPC System with Shared Memory
 
-This project simulates a **multi-process clothing shop system** in C using **POSIX shared memory (shmget, shmat)** and **semaphores (sem_open, sem_wait, sem_post)** to ensure synchronized access to inventory.
+This project simulates a **multi-process clothing shop system** in C using **POSIX shared memory (`shmget`, `shmat`)** and **semaphores (`sem_open`, `sem_wait`, `sem_post`)** to ensure synchronized access to inventory.
 
-## **📌 Overview**
+## 📌 Overview
 The system consists of **three processes**:
 1. **Shop (`shop.c`)** - Displays the inventory continuously (auto-refresh every 3 seconds).
 2. **Customer (`customer.c`)** - Allows customers to place orders, updating the inventory.
@@ -14,14 +14,4 @@ The system consists of **three processes**:
 
 ---
 
-## **📂 Project Structure**
-ClothingShop/ │── store.h # Shared memory & semaphore definitions │── shop.c # Shop process (Displays inventory) │── customer.c # Customer process (Places orders & refreshes) │── manager.c # Manager process (Updates stock & refreshes) │── inventory.txt # Initial stock (only read at startup) │── transactions.log # Logs transactions │── Makefile # Automates compilation
----
-
-## **🚀 How It Works**
-- **The `shop` process runs continuously**, refreshing inventory every 3 seconds.
-- **Customers place orders (`customer.c`)**, and the inventory updates immediately.
-- **Managers update stock (`manager.c`)**, and the changes appear in real-time.
-- **All processes use shared memory**, meaning **changes reflect across all processes immediately**.
-
-
+## 📂 Project Structure
