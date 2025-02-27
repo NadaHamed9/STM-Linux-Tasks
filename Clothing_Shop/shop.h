@@ -11,7 +11,6 @@
 #include <unistd.h>
 /*************************** DEFINED VARIABLES **************************/
 #define STORAGE_FILE "storage.txt"
-#define LOG_FILE "transactions.log"
 #define SHM_KEY 1234
 #define SEM_NAME "/shop_semaphore"
 /************************** GLOBAL VARIABLES ***************************/
